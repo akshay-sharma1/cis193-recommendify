@@ -1,14 +1,15 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 
-	spotifyauth "github.com/zmb3/spotify/v2/auth"
+	"html/template"
 
+	"github.com/gorilla/mux"
 	"github.com/zmb3/spotify/v2"
+	spotifyauth "github.com/zmb3/spotify/v2/auth"
 )
 
 const redirectURI = "http://localhost:8080/callback"
@@ -18,30 +19,34 @@ var ch = make(chan *spotify.Client)
 var state = "abc123"
 
 func main() {
-	// first start an HTTP server
+	// init router
+
+	// serve css and images
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("img"))))
+
+	http.HandleFunc("/", HomePage)
 	http.HandleFunc("/callback", completeAuth)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Got request for:", r.URL.String())
-	})
-	go func() {
-		err := http.ListenAndServe(":8080", nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
 
-	url := auth.AuthURL(state)
-	fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
+	http.ListenAndServe(":8080", nil)
+}
 
-	// wait for auth to complete
-	client := <-ch
+func newRouter() *mux.Router {
+	router := mux.NewRouter()
+	router.HandleFunc("/", HomePage).Methods("GET")
+	router.HandleFunc("/callback", completeAuth)
+	return router
+}
 
-	// use the client to make calls that require authorization
-	user, err := client.CurrentUser(context.Background())
+func HomePage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("html/start.html")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("template parsing error: ", err)
 	}
-	fmt.Println("You are logged in as:", user.ID)
+	err = t.Execute(w, nil)
+	if err != nil {
+		fmt.Println("template executing error:", err)
+	}
 }
 
 func completeAuth(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,707 @@
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Muli', 'Helvetica', 'Arial', 'sans-serif';
+}
+
+a {
+  color: #fdcc52;
+  transition: all .35s;
+}
+
+a:hover, a:focus {
+  color: #fcbd20;
+}
+p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+section {
+  padding: 100px 0;
+}
+
+section h2 {
+  font-size: 50px;
+}
+
+/*Main Nav Styles */
+#mainNav {
+  border-color: rgba(34, 34, 34, 0.05);
+  background-color: white;
+  transition: all .35s;
+  font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+#mainNav .navbar-brand {
+  color: #fdcc52;
+  font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+#mainNav .navbar-brand:hover, #mainNav .navbar-brand:focus {
+  color: #fcbd20;
+}
+
+#mainNav .navbar-toggler {
+  font-size: 12px;
+  padding: 8px 10px;
+  color: #222222;
+}
+
+#mainNav .navbar-nav > li > button {
+  font-size: 11px;
+  font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+#mainNav .navbar-nav > li > button.active {
+  color: #fdcc52 !important;
+  background-color: transparent;
+}
+
+#mainNav .navbar-nav > li > button.active:hover {
+  background-color: transparent;
+}
+
+#mainNav .navbar-nav > li > form > button,
+#mainNav .navbar-nav > li > form > button:focus {
+  color: black;
+}
+
+#mainNav .navbar-nav > li >  button:hover,
+#mainNav .navbar-nav > li > button:focus:hover {
+  color: #fdcc52;
+}
+
+@media (min-width: 992px) {
+  #mainNav {
+    border-color: transparent;
+    background-color: transparent;
+  }
+  #mainNav .navbar-brand {
+    color: fade(white, 70%);
+  }
+  #mainNav .navbar-brand:hover, #mainNav .navbar-brand:focus {
+    color: white;
+  }
+  #mainNav .navbar-nav > li > form > button,
+  #mainNav .navbar-nav > li > form > button:focus {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  #mainNav .navbar-nav > li > form > button:hover,
+  #mainNav .navbar-nav > li > form > button:focus:hover {
+    color: white;
+  }
+    #mainNav.navbar-shrink {
+    border-color: rgba(34, 34, 34, 0.1);
+    background-color: white;
+  }
+  #mainNav.navbar-shrink .navbar-brand {
+    color: #222222;
+  }
+  #mainNav.navbar-shrink .navbar-brand:hover, #mainNav.navbar-shrink .navbar-brand:focus {
+    color: #fdcc52;
+  }
+  #mainNav.navbar-shrink .navbar-nav > li > form > button,
+  #mainNav.navbar-shrink .navbar-nav > li > form > button:focus {
+    color: #222222;
+  }
+  #mainNav.navbar-shrink .navbar-nav > li > button:hover,
+  #mainNav.navbar-shrink .navbar-nav > li > button:focus:hover {
+    color: #fdcc52;
+  }
+}
+
+/*Main start masthead header*/
+
+header.masthead {
+  position: relative;
+  width: 100%;
+  padding-top: 150px;
+  padding-bottom: 100px;
+  color: white;
+  background: url("img/bg-pattern.png"), linear-gradient(to right, #1abc9c, lightseagreen);
+}
+
+header.masthead .header-content {
+  max-width: 500px;
+  margin-bottom: 100px;
+  text-align: center;
+}
+
+header.masthead .header-content h1 {
+  font-size: 30px;
+  font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+header.masthead .device-container {
+  max-width: 325px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+header.masthead .device-container .screen img {
+  border-radius: 3px;
+}
+
+@media (min-width: 992px) {
+  header.masthead {
+    height: 100vh;
+    min-height: 775px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  header.masthead .header-content {
+    margin-bottom: 0;
+    text-align: left;
+  }
+  header.masthead .header-content h1 {
+    font-size: 50px;
+  }
+  header.masthead .device-container {
+    max-width: 325px;
+  }
+}
+
+
+/* Contact Section */
+section.contact {
+  text-align: center;
+}
+
+section.contact h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+section.contact h2 i {
+  color: #dd4b39;
+}
+
+section.contact ul.list-social {
+  margin-bottom: 0;
+}
+
+section.contact ul.list-social li a {
+  font-size: 40px;
+  line-height: 80px;
+  display: block;
+  width: 80px;
+  height: 80px;
+  color: white;
+  border-radius: 100%;
+}
+
+section.contact ul.list-social li.social-github a {
+  background-color: #211F1F;
+}
+
+section.contact ul.list-social li.social-github a:hover {
+  background-color: #211F1F;
+}
+
+section.contact ul.list-social li.social-linkedin a {
+  background-color: #0e76a8;
+}
+
+section.contact ul.list-social li.social-linkedin a:hover {
+  background-color: #0e76a8;
+}
+
+section.contact ul.list-social li.social-gmail a {
+  background-color: #dd4b39;
+}
+
+section.contact ul.list-social li.social-gmail a:hover {
+  background-color: #d73925;
+}
+
+
+.bg-primary {
+  background: #fdcc52;
+  background: linear-gradient(#fdcc52, #fdc539);
+}
+
+.text-primary {
+  color: #fdcc52;
+}
+
+/*Global Button Styles */
+
+.btn {
+  border-radius: 300px;
+  font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.btn-xl {
+  font-size: 11px;
+  padding: 15px 45px;
+}
+
+.btn-outline {
+  color: white;
+    border: 1px solid white;
+}
+
+.btn-outline:hover, .btn-outline:focus, .btn-outline:active, .btn-outline.active {
+  color: white;
+  border-color: #fdcc52;
+  background-color: #fdcc52;
+}
+
+
+/*start.html footer */
+
+#footer {
+  padding: 10px 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  background-color: #222222;
+}
+
+/*Preferences.html */
+
+#masthead {
+  padding-top: calc(4rem + 74px);
+  padding-bottom: 5rem;
+  background: linear-gradient(to bottom, #1abc9c, lightseagreen);
+}
+
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.search_box {
+  padding-top: 45px;
+  width: 75%;
+  position: relative;
+}
+
+.search_box input[type='text'] {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  font-size: 18px;
+  font-family: 'Cairo', sans-serif;
+}
+
+#genre_submit {
+  border: 0;
+  background: none;
+}
+
+.ui-autocomplete {
+  max-height: 100px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+
+.fa-search {
+  position: absolute;
+  top: 57%;
+  transform: translateY(-45%);
+  right: 25px;
+  color: white;
+  font-size: 25px;
+}
+
+/*tweak more*/
+@media (min-width: 992px) {
+  .search_box {
+    width: 50%;
+  }
+
+  .ui-autocomplete {
+    overflow-y: scroll;
+  }
+
+}
+
+/*mood section*/
+.preferences-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 20px;
+}
+
+.createMood {
+  margin-top: 40px;
+}
+
+.moodItem {
+    padding: 10px 0 15px 40px;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.moodItem button {
+  display: block;
+  position: absolute;
+  top: 40%;
+  margin-left: 10px;
+  font-size: 7px;
+  color: white;
+  padding: 5px;
+  background-color: #159a80;
+  border-color: #159a80;
+}
+
+.moodImg img {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 125px;
+  height: 125px;
+}
+
+.mood-info p {
+  font-family: 'Cairo', sans-serif;
+}
+
+@media (min-width: 992px) {
+    .moodItem {
+        padding: 30px 40px 1rem 85px;
+        position: relative;
+    }
+
+    .moodImg img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .moodImg img:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      filter: brightness(50%);
+    }
+
+    .moodItem button {
+      display: none;
+    }
+
+
+    .moodImg:hover button {
+      display: block;
+      position: absolute;
+      top: 40%;
+      margin-left: 10px;
+      font-size: 9px;
+      padding: 10px;
+      background-color: transparent;
+      border: 1px solid white;
+    }
+
+  #moodButton:hover, #moodButton:focus, #moodButton:active {
+    color: white;
+    border-color: #fdcc52;
+    background-color: #fdcc52;
+  }
+
+
+}
+
+/*top track preferences*/
+
+.top-container {
+  display: flex;
+  flex-flow: row wrap;
+  padding-top: 20px;
+  align-content: flex-start;
+}
+
+
+.createArtist {
+  padding-top: 50px;
+}
+
+
+#titleText {
+  font-size: 25px !important;
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.title {
+  display: block;
+  padding-left: 40px;
+}
+
+.description {
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+}
+
+.topTrackItem {
+    padding: 10px 20px 15px 40px;
+    position: relative;
+}
+
+.topTrackItem button {
+  display: block;
+  position: absolute;
+  top: 40%;
+  font-size: 7px;
+  color: white;
+  padding: 5px;
+  background-color: #159a80;
+  border-color: #159a80;
+}
+
+
+.topTrackImg img {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 100px;
+  height: 100px;
+}
+
+
+.topTrack-info {
+  width: 100px;
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.songName {
+  display: block;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.artistName {
+  font-size: 10px !important;
+}
+
+@media (min-width: 992px) {
+  .title {
+      display: flex;
+      flex-flow: nowrap;
+  }
+
+  .description {
+      padding-left: 10px;
+      padding-top: 6px;
+  }
+
+  .topTrackItem {
+      padding: 30px 40px 1rem 85px;
+  }
+
+  .topTrackImg img {
+    width: 150px;
+    height: 150px;
+  }
+
+  .topTrackImg img:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      filter: brightness(50%);
+  }
+
+
+  .topTrackItem button {
+      display:none;
+    }
+
+  .topTrackImg:hover button {
+      display: block;
+      position: absolute;
+      top: 40%;
+      margin-left: 10px;
+      font-size: 9px;
+      padding: 10px;
+      background-color: transparent;
+      border: 1px solid white;
+    }
+
+  #artistButton:hover, #artistButton:focus, #artistButton:active {
+    color: white;
+    border-color: #fdcc52;
+    background-color: #fdcc52;
+  }
+
+
+  .topTrack-info {
+    width: 150px;
+  }
+
+}
+
+
+/* rec.html */
+
+.disappearing {
+  display: none;
+}
+
+.songItem {
+    display: flex;
+    flex: 30%;
+    padding: 30px 40px 1rem;
+    box-sizing: content-box;
+    position: relative;
+  }
+
+.songItem a {
+    display: none
+}
+
+.songImg:hover a {
+    display: block;
+    position: absolute;
+    font-size: 7px;
+    padding: 5px;
+    top: 50%;
+    margin-left: 20px;
+}
+
+.song-info {
+    padding-left: 1rem;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.songImg img {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 125px;
+    height: 125px;
+}
+
+.songImg img:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    filter: brightness(50%);
+}
+
+.trackName p {
+    display: block;
+    word-break: break-word;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.artist p {
+    font-size: 10px;
+}
+
+.interactionButtons {
+    display: flex;
+    justify-content: center;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+#bottomButtons {
+    margin-right: 40px;
+    margin-bottom: 10px;
+    font-size: 7px;
+}
+
+@media (min-width: 992px) {
+
+  .songItem {
+    padding: 30px 40px 1rem 120px;
+  }
+
+  .songImg img {
+    width: 250px;
+    height: 250px;
+  }
+
+  .songImg:hover a {
+    font-size: 11px;
+    padding: 15px 45px;
+    margin-left: 30px;
+  }
+
+  .trackName p {
+    font-size: 20px;
+  }
+
+  .artist p {
+    font-size: 15px;
+  }
+
+  #bottomButtons {
+    padding: 15px 45px;
+    font-size: 11px;
+    margin-right: 80px;
+  }
+
+}
+
+/* confirmation.html */
+
+#confirmationMasthead {
+  min-height: 100%;
+  background: linear-gradient(to top , #1abc9c, lightseagreen);
+}
+
+.recImg img {
+  margin-top: 50px;
+  width: 250px;
+  height: 250px;
+  transition: 0.3s;
+}
+
+.recImg img:hover {
+  filter: brightness(50%);
+}
+
+#playlist_text {
+  padding-top: 30px
+}
+
+#playlist_confirmation {
+  padding-top: 30px;
+
+}
+
+.navButtons {
+  display: flex;
+  justify-content: center;
+  margin-left: 30px;
+  margin-top: 20px;
+}
+
+#playlistLinks {
+    margin-right: 40px;
+    margin-bottom: 10px;
+    font-size: 7px;
+    padding: 5px;
+}
+
+@media (min-width: 992px) {
+  .recImg img {
+    margin-top: 100px;
+    width: 300px;
+    height: 300px;
+  }
+
+  #playlistLinks {
+    padding: 15px 45px;
+    font-size: 11px;
+    margin-right: 80px;
+  }
+}
