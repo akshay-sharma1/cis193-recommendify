@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -68,13 +67,6 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPreferences(w http.ResponseWriter, r *http.Request) {
-	// use the client to make calls that require authorization
-	user, err := client.CurrentUser(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("You are logged in as:", user.ID)
-
 	// TODO: use client to get user favorite tracks/artists
 
 	t, err := template.ParseFiles("html/preferences.html")
