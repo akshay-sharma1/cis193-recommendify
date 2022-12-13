@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,18 +16,17 @@ import (
 const redirectURI = "http://localhost:8080/callback"
 
 var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate))
-var ch = make(chan *spotify.Client)
 var state = "abc123"
+var client *spotify.Client
 
 func main() {
-	// init router
-
 	// serve css and images
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("img"))))
 
 	http.HandleFunc("/", HomePage)
 	http.HandleFunc("/callback", completeAuth)
+	http.HandleFunc("/preferences", getPreferences)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -39,14 +39,16 @@ func newRouter() *mux.Router {
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("html/start.html")
-	if err != nil {
-		fmt.Println("template parsing error: ", err)
+	t, _ := template.ParseFiles("html/start.html")
+	if r.Method != http.MethodPost {
+		t.Execute(w, nil)
+		return
 	}
-	err = t.Execute(w, nil)
-	if err != nil {
-		fmt.Println("template executing error:", err)
-	}
+
+	// redirect to authorization endpoint
+	url := auth.AuthURL(state)
+
+	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
 func completeAuth(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +63,27 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// use the token to get an authenticated client
-	client := spotify.New(auth.Client(r.Context(), tok))
-	fmt.Fprintf(w, "Login Completed!")
-	ch <- client
+	client = spotify.New(auth.Client(r.Context(), tok))
+	http.Redirect(w, r, "/preferences", http.StatusSeeOther)
+}
+
+func getPreferences(w http.ResponseWriter, r *http.Request) {
+	// use the client to make calls that require authorization
+	user, err := client.CurrentUser(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("You are logged in as:", user.ID)
+
+	// TODO: use client to get user favorite tracks/artists
+
+	t, err := template.ParseFiles("html/preferences.html")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if r.Method != http.MethodPost {
+		t.Execute(w, nil)
+		return
+	}
 }
