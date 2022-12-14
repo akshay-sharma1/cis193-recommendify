@@ -1,6 +1,20 @@
 package main
 
-func getMoodMetadata() map[string]string {
+import "github.com/zmb3/spotify/v2"
+
+type Mood struct {
+	Identifier []string
+	Image      []string
+}
+
+type TopTracks struct {
+}
+
+type TopArtists struct {
+}
+
+func GetMoodMetadata() Mood {
+	// TODO: change image links to proper source
 	BASE_URL := "https://source.unsplash.com"
 
 	image_ids := []string{"dWIVg59BVXY", "fnztlIb52gU", "s9CC2SKySJM", "zfPOelmDc-M"}
@@ -17,5 +31,14 @@ func getMoodMetadata() map[string]string {
 		identifier_map[identifier_list[i]] = image_urls[i]
 	}
 
-	return identifier_map
+	new_mood := Mood{
+		Identifier: identifier_list,
+		Image:      image_urls,
+	}
+
+	return new_mood
+}
+
+func getTopTrackMetadata(client *spotify.Client) {
+
 }

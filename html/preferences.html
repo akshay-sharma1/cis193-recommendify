@@ -69,20 +69,23 @@
             </div>
             <div class="preferences-container">
                  <!-- TODO make dynamic -->
+                 {{ $identifers := .Identifier }}
+                 {{range $index,$image := .Image }}
                 <form method="post">
                     <div class="moodItem">
                         <div class="moodImg">
-                            <img src="">
+                            <img src="{{ $image }}">
                             <button id="moodButton" class="btn btn-outline js-scroll-trigger" type="submit" >
-                            Create Playlist
+                            Create Playlists
                             </button>
                         </div>
                         <div class="mood-info">
-                            <p> test</p>
+                            <p>{{ index $identifers $index }}</p>
                         </div>
                         <input type="hidden" name="moodInput" value="5">
                     </div>
                 </form>
+                {{end}}
             </div>
         </div>
 

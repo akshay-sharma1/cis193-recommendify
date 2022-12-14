@@ -67,6 +67,9 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPreferences(w http.ResponseWriter, r *http.Request) {
+	// get mood photos/images
+	mood := GetMoodMetadata()
+
 	// TODO: use client to get user favorite tracks/artists
 
 	t, err := template.ParseFiles("html/preferences.html")
@@ -75,7 +78,7 @@ func getPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method != http.MethodPost {
-		t.Execute(w, nil)
+		t.Execute(w, mood)
 		return
 	}
 }
