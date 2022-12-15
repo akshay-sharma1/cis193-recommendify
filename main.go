@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,9 +15,11 @@ import (
 
 const redirectURI = "http://localhost:8080/callback"
 
-var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate))
+var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate, spotifyauth.ScopeUserTopRead))
 var state = "abc123"
 var client *spotify.Client
+
+var ctxt = context.Background()
 
 func main() {
 	// serve css and images
@@ -69,8 +72,11 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 func getPreferences(w http.ResponseWriter, r *http.Request) {
 	// get mood photos/images
 	mood := GetMoodMetadata()
-
-	// TODO: use client to get user favorite tracks/artists
+	top_tracks := getTopTrackMetadata(client, ctxt)
+	preferences_data := PreferencesData{
+		mood,
+		top_tracks,
+	}
 
 	t, err := template.ParseFiles("html/preferences.html")
 	if err != nil {
@@ -78,7 +84,7 @@ func getPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method != http.MethodPost {
-		t.Execute(w, mood)
+		t.Execute(w, preferences_data)
 		return
 	}
 }

@@ -76,7 +76,7 @@
                         <div class="moodImg">
                             <img src="{{ $image }}">
                             <button id="moodButton" class="btn btn-outline js-scroll-trigger" type="submit" >
-                            Create Playlists
+                            Create Playlist
                             </button>
                         </div>
                         <div class="mood-info">
@@ -90,28 +90,31 @@
         </div>
 
 
-       <!-- Preferences Section (Top Artist) -->
+       <!-- Preferences Section (Top Track) -->
       <div class="createArtist">
           <div class="title">
             <h3 id="titleText" class="masthead-subheading font-weight-light mb-0"> Create by Top Track</h3>
             <p class="description">select a favorite track to create a similar playlist!</p>
           </div>
           <div class="top-container">
-               <!-- TODO make dynamic -->
+            {{ $names := .Name }}
+            {{ $images := .SongImage }}
+            {{range $index,$artist := .ArtistName }}
               <form method="post">
                   <div class="topTrackItem">
                       <div class="topTrackImg">
-                          <img src="">
+                          <img src="{{ index $images $index }}">
                           <button id="artistButton" class="btn btn-outline js-scroll-trigger" type="submit">
                               Create Playlist </button>
                       </div>
                       <div class="topTrack-info">
-                          <p class="songName"> test </p>
-                          <p class="artistName"> test2</p>
+                          <p class="songName"> {{ index $names $index }}</p>
+                          <p class="artistName"> {{ $artist }}</p>
                       </div>
                       <input type="hidden" name="topTrackInput" value="5">
                   </div>
               </form>
+              {{end}}
           </div>
       </div>
 
