@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/zmb3/spotify/v2"
 )
@@ -10,6 +11,7 @@ import (
 type PreferencesData struct {
 	Mood
 	TopTracks
+	Genre
 }
 
 type Mood struct {
@@ -23,7 +25,8 @@ type TopTracks struct {
 	ArtistName []string
 }
 
-type TopArtists struct {
+type Genre struct {
+	Genres []string
 }
 
 func GetMoodMetadata() Mood {
@@ -52,7 +55,7 @@ func GetMoodMetadata() Mood {
 	return new_mood
 }
 
-func getTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks {
+func GetTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks {
 	tracks, err := client.CurrentUsersTopTracks(ctxt, spotify.Limit(10))
 	if err != nil {
 		fmt.Println(err)
@@ -83,5 +86,17 @@ func getTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks
 		Name:       song_names,
 		SongImage:  song_images,
 		ArtistName: artist_names,
+	}
+}
+
+func GenerateAutocomplete(client *spotify.Client, ctxt context.Context) Genre {
+	genre_list, err := client.GetAvailableGenreSeeds(ctxt)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	sort.Strings(genre_list)
+	return Genre{
+		genre_list,
 	}
 }

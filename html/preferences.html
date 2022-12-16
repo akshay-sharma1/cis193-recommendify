@@ -133,5 +133,13 @@
         <script src="../static/new-age.js"></script>
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script type="text/javascript">
+            const availableTags = "{{.Genres}}"
+            var genres = availableTags.substring(1, availableTags.length - 1)
+            genres = genres.split(" ")
+            $('#genre_search').autocomplete({
+                source: genres
+            });
+        </script>
     </body>
 </html>

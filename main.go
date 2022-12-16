@@ -72,10 +72,12 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 func getPreferences(w http.ResponseWriter, r *http.Request) {
 	// get mood photos/images
 	mood := GetMoodMetadata()
-	top_tracks := getTopTrackMetadata(client, ctxt)
+	top_tracks := GetTopTrackMetadata(client, ctxt)
+	genre_list := GenerateAutocomplete(client, ctxt)
 	preferences_data := PreferencesData{
 		mood,
 		top_tracks,
+		genre_list,
 	}
 
 	t, err := template.ParseFiles("html/preferences.html")
