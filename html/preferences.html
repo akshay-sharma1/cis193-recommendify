@@ -81,7 +81,7 @@
                         <div class="mood-info">
                             <p>{{ index $identifers $index }}</p>
                         </div>
-                        <input type="hidden" name="moodInput" value="5">
+                        <input type="hidden" name="moodInput" value="{{ index $identifers $index}}">
                     </div>
                 </form>
                 {{end}}
@@ -110,7 +110,7 @@
                           <p class="songName"> {{ index $names $index }}</p>
                           <p class="artistName"> {{ $artist }}</p>
                       </div>
-                      <input type="hidden" name="topTrackInput" value="5">
+                      <input type="hidden" name="topTrackInput" value="{{ index $names $index }}">
                   </div>
               </form>
               {{end}}

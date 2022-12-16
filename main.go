@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"html/template"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/zmb3/spotify/v2"
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
 )
@@ -18,6 +20,11 @@ const redirectURI = "http://localhost:8080/callback"
 var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate, spotifyauth.ScopeUserTopRead))
 var state = "abc123"
 var client *spotify.Client
+
+var (
+	key   = []byte("recommendify-key")
+	store = sessions.NewCookieStore(key)
+)
 
 var ctxt = context.Background()
 
@@ -29,6 +36,7 @@ func main() {
 	http.HandleFunc("/", HomePage)
 	http.HandleFunc("/callback", completeAuth)
 	http.HandleFunc("/preferences", getPreferences)
+	http.HandleFunc("/recommendations", getRecommendations)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -64,6 +72,11 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("State mismatch: %s != %s\n", st, state)
 	}
 
+	// add authenticated flag in session
+	session, _ := store.Get(r, "cookie-name")
+	session.Values["authenticated"] = true
+	session.Save(r, w)
+
 	// use the token to get an authenticated client
 	client = spotify.New(auth.Client(r.Context(), tok))
 	http.Redirect(w, r, "/preferences", http.StatusSeeOther)
@@ -85,8 +98,85 @@ func getPreferences(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	if r.Method != http.MethodPost {
+	if r.Method == http.MethodGet {
 		t.Execute(w, preferences_data)
 		return
 	}
+
+	if r.Method == http.MethodPost {
+		session, _ := store.Get(r, "cookie-name")
+
+		// get information from post request and redirect
+		parse_err := r.ParseForm()
+		if err != nil {
+			fmt.Println(parse_err)
+		}
+
+		// parse form input
+		if r.Form.Has("logout_input") {
+			logout(w, r)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		} else if r.Form.Has("genreInput") {
+			session.Values["genreInput"] = r.Form.Get("genreInput")
+			session.Values["moodInput"] = nil
+			session.Values["topTrackInput"] = nil
+		} else if r.Form.Has("moodInput") {
+			session.Values["moodInput"] = r.Form.Get("moodInput")
+			session.Values["topTrackInput"] = nil
+			session.Values["genreInput"] = nil
+		} else {
+			session.Values["topTrackInput"] = r.Form.Get("topTrackInput")
+			session.Values["moodInput"] = nil
+			session.Values["genreInput"] = nil
+		}
+
+		session.Save(r, w)
+		http.Redirect(w, r, "/recommendations", http.StatusSeeOther)
+	}
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
+	// Revoke users authentication
+	session.Values["authenticated"] = false
+	session.Values["genreInput"] = nil
+	session.Values["moodInput"] = nil
+	session.Values["topTrackInput"] = nil
+	session.Save(r, w)
+}
+
+func getRecommendations(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
+	t, err := template.ParseFiles("html/rec.html")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if session.Values["moodInput"] != nil {
+		val, ok := session.Values["moodInput"].(string)
+		if !ok {
+			fmt.Println("moodInput isn't a string")
+		}
+
+		recommendations := RecommendMood(client, ctxt, strings.ToLower(val))
+		t.Execute(w, recommendations)
+	} else if session.Values["genreInput"] != nil {
+
+	} else if session.Values["topTrackInput"] != nil {
+
+	}
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+
+	return false
 }

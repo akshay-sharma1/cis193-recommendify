@@ -29,6 +29,13 @@ type Genre struct {
 	Genres []string
 }
 
+type Recommendations struct {
+	RecommendName    []string
+	RecommendImage   []string
+	RecommendArtist  []string
+	RecommendSpotify []string
+}
+
 func GetMoodMetadata() Mood {
 	BASE_URL := "https://source.unsplash.com/"
 
@@ -47,6 +54,21 @@ func GetMoodMetadata() Mood {
 	}
 
 	return new_mood
+}
+
+func getAlbumImageURI(client *spotify.Client, ctxt context.Context, id spotify.ID) spotify.Image {
+	tracks, err := client.GetTrack(ctxt, id)
+	if err != nil {
+		fmt.Println("error getting track: ", err)
+	}
+
+	for i, elem := range tracks.Album.Images {
+		if i == 0 {
+			return elem
+		}
+	}
+
+	return spotify.Image{}
 }
 
 func GetTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks {
@@ -92,5 +114,63 @@ func GenerateAutocomplete(client *spotify.Client, ctxt context.Context) Genre {
 	sort.Strings(genre_list)
 	return Genre{
 		genre_list,
+	}
+}
+
+func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Recommendations {
+	var tgtValence, tgtEnergy float64
+	targetGenres := make([]string, 2)
+	if mood == "chill" {
+		tgtValence = 0.6
+		tgtEnergy = 0.2
+		targetGenres = []string{"chill", "pop"}
+	} else if mood == "mood booster" {
+		tgtValence = 0.8
+		tgtEnergy = 0.5
+		targetGenres = []string{"pop", "happy"}
+	} else if mood == "deep focus" {
+		tgtValence = 0.6
+		tgtEnergy = 0.2
+		targetGenres = []string{"study", "classical"}
+	} else {
+		tgtValence = 0.7
+		tgtEnergy = 0.8
+		targetGenres = []string{"work-out", "hip-hop"}
+	}
+
+	seeds := spotify.Seeds{
+		Genres: targetGenres,
+	}
+
+	track_attributes := spotify.NewTrackAttributes().TargetValence(tgtValence).TargetEnergy(tgtEnergy)
+
+	recommmendations, err := client.GetRecommendations(ctxt, seeds, track_attributes, spotify.Limit(30))
+	if err != nil {
+		fmt.Println("error getting recommendations: ", err)
+	}
+
+	song_names := make([]string, 30)
+	artist_names := make([]string, 30)
+	song_imgs := make([]string, 30)
+	preview_urls := make([]string, 30)
+
+	for i, elem := range recommmendations.Tracks {
+		song_names[i] = elem.Name
+		preview_urls[i] = elem.PreviewURL
+
+		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
+
+		for k, artist := range elem.Artists {
+			if k == 0 {
+				artist_names[i] = artist.Name
+			}
+		}
+	}
+
+	return Recommendations{
+		RecommendName:    song_names,
+		RecommendImage:   song_imgs,
+		RecommendArtist:  artist_names,
+		RecommendSpotify: preview_urls,
 	}
 }
