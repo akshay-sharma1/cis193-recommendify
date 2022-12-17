@@ -165,9 +165,23 @@ func getRecommendations(w http.ResponseWriter, r *http.Request) {
 		recommendations := RecommendMood(client, ctxt, strings.ToLower(val))
 		t.Execute(w, recommendations)
 	} else if session.Values["genreInput"] != nil {
+		val, ok := session.Values["genreInput"].(string)
+		if !ok {
+			fmt.Println("genreInput isn't a string")
+		}
 
+		recommendations := RecommendFromGenre(client, ctxt, strings.ToLower(val))
+		t.Execute(w, recommendations)
 	} else if session.Values["topTrackInput"] != nil {
+		val, ok := session.Values["topTrackInput"].(string)
+		if !ok {
+			fmt.Println("topTrackInput isn't a string")
+		}
 
+		fmt.Println(val)
+
+		recommendations := RecommendFromTrack(client, ctxt, val)
+		t.Execute(w, recommendations)
 	}
 }
 

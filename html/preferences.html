@@ -98,6 +98,7 @@
           <div class="top-container">
             {{ $names := .Name }}
             {{ $images := .SongImage }}
+            {{ $ids := .SongIds }}
             {{range $index,$artist := .ArtistName }}
               <form method="post">
                   <div class="topTrackItem">
@@ -110,7 +111,7 @@
                           <p class="songName"> {{ index $names $index }}</p>
                           <p class="artistName"> {{ $artist }}</p>
                       </div>
-                      <input type="hidden" name="topTrackInput" value="{{ index $names $index }}">
+                      <input type="hidden" name="topTrackInput" value="{{ index $ids $index }}">
                   </div>
               </form>
               {{end}}

@@ -23,6 +23,7 @@ type TopTracks struct {
 	Name       []string
 	SongImage  []string
 	ArtistName []string
+	SongIds    []string
 }
 
 type Genre struct {
@@ -81,9 +82,11 @@ func GetTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks
 	song_names := make([]string, 10)
 	song_images := make([]string, 10)
 	artist_names := make([]string, 10)
+	song_ids := make([]string, 10)
 
 	for i, elem := range tracks.Tracks {
 		song_names[i] = elem.Name
+		song_ids[i] = string(elem.ID)
 
 		for j, image := range elem.Album.Images {
 			if j == 1 {
@@ -102,6 +105,7 @@ func GetTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks
 		Name:       song_names,
 		SongImage:  song_images,
 		ArtistName: artist_names,
+		SongIds:    song_ids,
 	}
 }
 
@@ -144,7 +148,7 @@ func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Re
 
 	track_attributes := spotify.NewTrackAttributes().TargetValence(tgtValence).TargetEnergy(tgtEnergy)
 
-	recommmendations, err := client.GetRecommendations(ctxt, seeds, track_attributes, spotify.Limit(30))
+	recommendations, err := client.GetRecommendations(ctxt, seeds, track_attributes, spotify.Limit(30))
 	if err != nil {
 		fmt.Println("error getting recommendations: ", err)
 	}
@@ -154,7 +158,82 @@ func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Re
 	song_imgs := make([]string, 30)
 	preview_urls := make([]string, 30)
 
-	for i, elem := range recommmendations.Tracks {
+	for i, elem := range recommendations.Tracks {
+		song_names[i] = elem.Name
+		preview_urls[i] = elem.PreviewURL
+
+		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
+
+		for k, artist := range elem.Artists {
+			if k == 0 {
+				artist_names[i] = artist.Name
+			}
+		}
+	}
+
+	return Recommendations{
+		RecommendName:    song_names,
+		RecommendImage:   song_imgs,
+		RecommendArtist:  artist_names,
+		RecommendSpotify: preview_urls,
+	}
+}
+
+func RecommendFromGenre(client *spotify.Client, ctxt context.Context, genre string) Recommendations {
+	genres := make([]string, 1)
+	genres[0] = genre
+	seeds := spotify.Seeds{
+		Genres: genres,
+	}
+
+	recommendations, err := client.GetRecommendations(ctxt, seeds, nil, spotify.Limit(30))
+	if err != nil {
+		fmt.Println("error getting recommendations: ", err)
+	}
+
+	song_names := make([]string, 30)
+	artist_names := make([]string, 30)
+	song_imgs := make([]string, 30)
+	preview_urls := make([]string, 30)
+
+	for i, elem := range recommendations.Tracks {
+		song_names[i] = elem.Name
+		preview_urls[i] = elem.PreviewURL
+
+		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
+
+		for k, artist := range elem.Artists {
+			if k == 0 {
+				artist_names[i] = artist.Name
+			}
+		}
+	}
+
+	return Recommendations{
+		RecommendName:    song_names,
+		RecommendImage:   song_imgs,
+		RecommendArtist:  artist_names,
+		RecommendSpotify: preview_urls,
+	}
+}
+
+func RecommendFromTrack(client *spotify.Client, ctxt context.Context, song_id string) Recommendations {
+	song_ids := []spotify.ID{spotify.ID(song_id)}
+	seeds := spotify.Seeds{
+		Tracks: song_ids,
+	}
+
+	recommendations, err := client.GetRecommendations(ctxt, seeds, nil, spotify.Limit(30))
+	if err != nil {
+		fmt.Println("error getting recommendations: ", err)
+	}
+
+	song_names := make([]string, 30)
+	artist_names := make([]string, 30)
+	song_imgs := make([]string, 30)
+	preview_urls := make([]string, 30)
+
+	for i, elem := range recommendations.Tracks {
 		song_names[i] = elem.Name
 		preview_urls[i] = elem.PreviewURL
 
