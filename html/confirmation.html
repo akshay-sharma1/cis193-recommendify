@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Recommendify - Your Recommendation!</title>
+        <!-- Font Awesome icons (free version)-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!-- Google fonts-->
+       <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <link href="../css/custom-styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+
+
+        <!-- Masthead-->
+        <div id="confirmationMasthead" class="masthead bg-primary text-white text-center">
+            <div id= "masthead-center" class="container d-flex align-items-center flex-column">
+                <div class="recImg">
+                    <img class="playlist-image" src="{{ .PlaylistImg }}" alt="">
+                </div>
+                <h1 id="playlist_text" class="masthead-heading text mb-0">{{ .PlaylistName }}</h1>
+                <!-- Masthead Subheading-->
+                <p id="playlist_confirmation" class="masthead-subheading font-weight-light mb-0"> Success! Your playlist was added to your Spotify Library!</p>
+            </div>
+            <!--Buttons -->
+          <div class="navButtons">
+              <a id="playlistLinks" class="btn btn-outline btn-xl js-scroll-trigger" href="{{ .PlaylistPreview }}"> Start Listening! </a>
+              <a id="playlistLinks" class="btn btn-xl btn-outline-light" href="/preferences">
+                  Get Another Playlist
+              </a>
+          </div>
+        </div>
+
+    </body>
+
+</html>

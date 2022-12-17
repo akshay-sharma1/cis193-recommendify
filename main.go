@@ -17,7 +17,7 @@ import (
 
 const redirectURI = "http://localhost:8080/callback"
 
-var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate, spotifyauth.ScopeUserTopRead))
+var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate, spotifyauth.ScopeUserTopRead, spotifyauth.ScopePlaylistModifyPublic))
 var state = "abc123"
 var client *spotify.Client
 
@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("/callback", completeAuth)
 	http.HandleFunc("/preferences", getPreferences)
 	http.HandleFunc("/recommendations", getRecommendations)
+	http.HandleFunc("/confirmation", getPlaylist)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -144,44 +145,104 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	session.Values["genreInput"] = nil
 	session.Values["moodInput"] = nil
 	session.Values["topTrackInput"] = nil
+	session.Values["playlist_id"] = nil
+	session.Values["track_ids"] = nil
 	session.Save(r, w)
 }
 
 func getRecommendations(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "cookie-name")
+	if r.Method == http.MethodGet {
+		session, _ := store.Get(r, "cookie-name")
 
-	t, err := template.ParseFiles("html/rec.html")
-	if err != nil {
-		fmt.Println(err)
+		t, err := template.ParseFiles("html/rec.html")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if session.Values["moodInput"] != nil {
+			val, ok := session.Values["moodInput"].(string)
+			if !ok {
+				fmt.Println("moodInput isn't a string")
+			}
+
+			recommendations := RecommendMood(client, ctxt, strings.ToLower(val))
+			session.Values["track_ids"] = recommendations.RecommendTrackID
+			session.Save(r, w)
+			t.Execute(w, recommendations)
+		} else if session.Values["genreInput"] != nil {
+			val, ok := session.Values["genreInput"].(string)
+			if !ok {
+				fmt.Println("genreInput isn't a string")
+			}
+
+			recommendations := RecommendFromGenre(client, ctxt, strings.ToLower(val))
+			session.Values["track_ids"] = recommendations.RecommendTrackID
+			session.Save(r, w)
+			t.Execute(w, recommendations)
+		} else if session.Values["topTrackInput"] != nil {
+			val, ok := session.Values["topTrackInput"].(string)
+			if !ok {
+				fmt.Println("topTrackInput isn't a string")
+			}
+
+			recommendations := RecommendFromTrack(client, ctxt, val)
+			session.Values["track_ids"] = recommendations.RecommendTrackID
+			session.Save(r, w)
+			t.Execute(w, recommendations)
+		}
+	}
+
+	// if user selects logout or create playlist, handle that action
+	if r.Method == http.MethodPost {
+		session, _ := store.Get(r, "cookie-name")
+
+		// get information from post request and redirect
+		parse_err := r.ParseForm()
+		if parse_err != nil {
+			fmt.Println(parse_err)
+		}
+
+		if r.Form.Has("logout_input") {
+			logout(w, r)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		} else if r.Form.Has("playlistInput") {
+			val, ok := session.Values["track_ids"].([]string)
+			if !ok {
+				fmt.Println("error getting recommended track ids for playlist")
+			}
+			playlist_id := CreatePlaylist(client, ctxt, val)
+			session.Values["playlist_id"] = playlist_id
+		}
+		session.Save(r, w)
+		http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
+	}
+}
+
+func getPlaylist(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		logout(w, r)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	if session.Values["moodInput"] != nil {
-		val, ok := session.Values["moodInput"].(string)
-		if !ok {
-			fmt.Println("moodInput isn't a string")
+	if r.Method == http.MethodGet {
+		session, _ := store.Get(r, "cookie-name")
+		t, err := template.ParseFiles("html/confirmation.html")
+		if err != nil {
+			fmt.Println(err)
+			return
+
 		}
-
-		recommendations := RecommendMood(client, ctxt, strings.ToLower(val))
-		t.Execute(w, recommendations)
-	} else if session.Values["genreInput"] != nil {
-		val, ok := session.Values["genreInput"].(string)
-		if !ok {
-			fmt.Println("genreInput isn't a string")
+		if session.Values["playlist_id"] != nil {
+			val, ok := session.Values["playlist_id"].(string)
+			if !ok {
+				fmt.Println("error parsing session playlist id")
+			}
+			playlist := GetPlaylist(client, ctxt, val)
+			t.Execute(w, playlist)
 		}
-
-		recommendations := RecommendFromGenre(client, ctxt, strings.ToLower(val))
-		t.Execute(w, recommendations)
-	} else if session.Values["topTrackInput"] != nil {
-		val, ok := session.Values["topTrackInput"].(string)
-		if !ok {
-			fmt.Println("topTrackInput isn't a string")
-		}
-
-		fmt.Println(val)
-
-		recommendations := RecommendFromTrack(client, ctxt, val)
-		t.Execute(w, recommendations)
 	}
 }
 

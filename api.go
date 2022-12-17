@@ -35,6 +35,13 @@ type Recommendations struct {
 	RecommendImage   []string
 	RecommendArtist  []string
 	RecommendSpotify []string
+	RecommendTrackID []string
+}
+
+type CreatedPlaylist struct {
+	PlaylistImg     string
+	PlaylistName    string
+	PlaylistPreview string
 }
 
 func GetMoodMetadata() Mood {
@@ -151,16 +158,19 @@ func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Re
 	recommendations, err := client.GetRecommendations(ctxt, seeds, track_attributes, spotify.Limit(30))
 	if err != nil {
 		fmt.Println("error getting recommendations: ", err)
+		return Recommendations{}
 	}
 
 	song_names := make([]string, 30)
 	artist_names := make([]string, 30)
 	song_imgs := make([]string, 30)
 	preview_urls := make([]string, 30)
+	track_ids := make([]string, 30)
 
 	for i, elem := range recommendations.Tracks {
 		song_names[i] = elem.Name
 		preview_urls[i] = elem.PreviewURL
+		track_ids[i] = string(elem.ID)
 
 		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
 
@@ -176,6 +186,7 @@ func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Re
 		RecommendImage:   song_imgs,
 		RecommendArtist:  artist_names,
 		RecommendSpotify: preview_urls,
+		RecommendTrackID: track_ids,
 	}
 }
 
@@ -189,16 +200,19 @@ func RecommendFromGenre(client *spotify.Client, ctxt context.Context, genre stri
 	recommendations, err := client.GetRecommendations(ctxt, seeds, nil, spotify.Limit(30))
 	if err != nil {
 		fmt.Println("error getting recommendations: ", err)
+		return Recommendations{}
 	}
 
 	song_names := make([]string, 30)
 	artist_names := make([]string, 30)
 	song_imgs := make([]string, 30)
 	preview_urls := make([]string, 30)
+	track_ids := make([]string, 30)
 
 	for i, elem := range recommendations.Tracks {
 		song_names[i] = elem.Name
 		preview_urls[i] = elem.PreviewURL
+		track_ids[i] = string(elem.ID)
 
 		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
 
@@ -214,6 +228,7 @@ func RecommendFromGenre(client *spotify.Client, ctxt context.Context, genre stri
 		RecommendImage:   song_imgs,
 		RecommendArtist:  artist_names,
 		RecommendSpotify: preview_urls,
+		RecommendTrackID: track_ids,
 	}
 }
 
@@ -226,16 +241,19 @@ func RecommendFromTrack(client *spotify.Client, ctxt context.Context, song_id st
 	recommendations, err := client.GetRecommendations(ctxt, seeds, nil, spotify.Limit(30))
 	if err != nil {
 		fmt.Println("error getting recommendations: ", err)
+		return Recommendations{}
 	}
 
 	song_names := make([]string, 30)
 	artist_names := make([]string, 30)
 	song_imgs := make([]string, 30)
 	preview_urls := make([]string, 30)
+	track_ids := make([]string, 30)
 
 	for i, elem := range recommendations.Tracks {
 		song_names[i] = elem.Name
 		preview_urls[i] = elem.PreviewURL
+		track_ids[i] = string(elem.ID)
 
 		song_imgs[i] = getAlbumImageURI(client, ctxt, elem.ID).URL
 
@@ -251,5 +269,51 @@ func RecommendFromTrack(client *spotify.Client, ctxt context.Context, song_id st
 		RecommendImage:   song_imgs,
 		RecommendArtist:  artist_names,
 		RecommendSpotify: preview_urls,
+		RecommendTrackID: track_ids,
+	}
+}
+
+func CreatePlaylist(client *spotify.Client, ctxt context.Context, track_ids []string) string {
+	curr_user, err := client.CurrentUser(ctxt)
+	if err != nil {
+		fmt.Println("error getting current user for creating playlist")
+	}
+
+	playlist, err := client.CreatePlaylistForUser(ctxt, curr_user.ID, "Your Recommended Playlist", "recommendify-generated playlist", true, false)
+	if err != nil {
+		fmt.Println("error creating playlist")
+	}
+
+	song_ids := make([]spotify.ID, len(track_ids))
+	for i, ele := range track_ids {
+		song_ids[i] = spotify.ID(ele)
+	}
+	client.AddTracksToPlaylist(ctxt, playlist.ID, song_ids...)
+
+	return string(playlist.ID)
+}
+
+func GetPlaylist(client *spotify.Client, ctxt context.Context, playlist_id string) CreatedPlaylist {
+	playlist, err := client.GetPlaylist(ctxt, spotify.ID(playlist_id))
+	if err != nil {
+		fmt.Println("error getting playlist for display")
+		return CreatedPlaylist{}
+	}
+
+	var playlist_img, playlist_url, playlist_name string
+	playlist_name = playlist.Name
+	playlist_url = playlist.ExternalURLs["spotify"]
+
+	for i, elem := range playlist.Images {
+		if i == 0 {
+			playlist_img = elem.URL
+			break
+		}
+	}
+
+	return CreatedPlaylist{
+		PlaylistImg:     playlist_img,
+		PlaylistName:    playlist_name,
+		PlaylistPreview: playlist_url,
 	}
 }
