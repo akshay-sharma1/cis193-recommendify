@@ -16,7 +16,7 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-var redirectURI = os.Getenv("REDIRECT_URI")
+var redirectURI = "http://localhost:8080/callback"
 
 var auth = spotifyauth.New(spotifyauth.WithRedirectURL(redirectURI), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate, spotifyauth.ScopeUserTopRead, spotifyauth.ScopePlaylistModifyPublic))
 var state = "abc123"
@@ -40,7 +40,7 @@ func main() {
 	http.HandleFunc("/recommendations", getRecommendations)
 	http.HandleFunc("/confirmation", getPlaylist)
 
-	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
