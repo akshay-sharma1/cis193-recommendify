@@ -15,9 +15,9 @@ curate only the most relevant tracks. You can then preview individual songs, add
 ## Usage Instructions
 To use this app, first set the following environment variables:
 
-``EXPORT SPOTIFY_SECRET=2bbb563a76344f5093984312db7c7a1f``
+``export SPOTIFY_SECRET=2bbb563a76344f5093984312db7c7a1f``
 
-``EXPORT SPOTIFY_ID=ed2847982e1741148c1e48512bc5fa55``
+``export SPOTIFY_ID=ed2847982e1741148c1e48512bc5fa55``
 
 Then, run the following command: 
 
