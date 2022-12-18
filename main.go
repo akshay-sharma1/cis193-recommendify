@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"html/template"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/zmb3/spotify/v2"
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 const redirectURI = "http://localhost:8080/callback"
@@ -42,13 +43,6 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func newRouter() *mux.Router {
-	router := mux.NewRouter()
-	router.HandleFunc("/", HomePage).Methods("GET")
-	router.HandleFunc("/callback", completeAuth)
-	return router
-}
-
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("html/start.html")
 	if r.Method != http.MethodPost {
@@ -56,10 +50,38 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// redirect to authorization endpoint
-	url := auth.AuthURL(state)
+	if r.Method == http.MethodPost {
+		parse_err := r.ParseForm()
+		if parse_err != nil {
+			fmt.Println(parse_err)
+		}
 
-	http.Redirect(w, r, url, http.StatusSeeOther)
+		if r.Form.Has("normalInput") {
+			// create normal client without authorization
+			initClient()
+			http.Redirect(w, r, "/preferences", http.StatusSeeOther)
+		} else if r.Form.Has("authenticateInput") {
+			// redirect to authorization endpoint
+			url := auth.AuthURL(state)
+			http.Redirect(w, r, url, http.StatusSeeOther)
+		}
+
+	}
+}
+
+func initClient() {
+	config := &clientcredentials.Config{
+		ClientID:     os.Getenv("SPOTIFY_ID"),
+		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
+		TokenURL:     spotifyauth.TokenURL,
+	}
+	token, err := config.Token(ctxt)
+	if err != nil {
+		log.Fatalf("couldn't get token: %v", err)
+	}
+
+	httpClient := spotifyauth.New().Client(ctxt, token)
+	client = spotify.New(httpClient)
 }
 
 func completeAuth(w http.ResponseWriter, r *http.Request) {
@@ -84,10 +106,26 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPreferences(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+
 	// get mood photos/images
 	mood := GetMoodMetadata()
-	top_tracks := GetTopTrackMetadata(client, ctxt)
 	genre_list := GenerateAutocomplete(client, ctxt)
+
+	is_authenticated, ok := session.Values["authenticated"].(bool)
+	if !ok {
+		fmt.Println("error parsing authenticated status")
+		return
+	}
+
+	// get top tracks if client is authenticated, else get popular tracks
+	var top_tracks TopTracks
+	if is_authenticated {
+		top_tracks = GetTopTrackMetadata(client, ctxt)
+	} else {
+		top_tracks = GetPopularTrackMetadata(client, ctxt)
+	}
+
 	preferences_data := PreferencesData{
 		mood,
 		top_tracks,
@@ -140,13 +178,14 @@ func getPreferences(w http.ResponseWriter, r *http.Request) {
 func logout(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "cookie-name")
 
-	// Revoke users authentication
+	// Revoke users authentication and reset all values
 	session.Values["authenticated"] = false
 	session.Values["genreInput"] = nil
 	session.Values["moodInput"] = nil
 	session.Values["topTrackInput"] = nil
 	session.Values["playlist_id"] = nil
 	session.Values["track_ids"] = nil
+	client = nil
 	session.Save(r, w)
 }
 

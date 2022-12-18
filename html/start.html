@@ -51,7 +51,12 @@
           <div class="header-content mx-auto">
               <h1 class="mb-5">Personalized music recommendations with a click of a button. </h1>
               <form method="post">
-                    <button class="btn btn-outline btn-xl js-scroll-trigger" type="submit">Connect with Spotify</button>
+                <input type="hidden" name="normalInput">
+                <button class="btn btn-outline btn-xl js-scroll-trigger" type="submit" >Use without logging in</button>
+              </form>
+              <form method="post">
+                    <input type="hidden" name="authenticateInput">
+                    <button class="btn btn-outline btn-xl js-scroll-trigger" style="margin-top: 20px" type="submit" >Connect with Spotify</button>
               </form>
           </div>
         </div>

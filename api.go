@@ -116,6 +116,46 @@ func GetTopTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks
 	}
 }
 
+func GetPopularTrackMetadata(client *spotify.Client, ctxt context.Context) TopTracks {
+	tracks, err := client.GetPlaylist(ctxt, "37i9dQZEVXbMDoHDwVN2tF", spotify.Limit(10))
+	if err != nil {
+		fmt.Println(err)
+		return TopTracks{}
+	}
+
+	song_names := make([]string, 10)
+	song_images := make([]string, 10)
+	artist_names := make([]string, 10)
+	song_ids := make([]string, 10)
+
+	for i, elem := range tracks.Tracks.Tracks {
+		if i == 10 {
+			break
+		}
+		song_names[i] = elem.Track.Name
+		song_ids[i] = string(elem.Track.ID)
+
+		for j, image := range elem.Track.Album.Images {
+			if j == 1 {
+				song_images[i] = image.URL
+			}
+		}
+
+		for k, artist := range elem.Track.Artists {
+			if k == 0 {
+				artist_names[i] = artist.Name
+			}
+		}
+	}
+
+	return TopTracks{
+		Name:       song_names,
+		SongImage:  song_images,
+		ArtistName: artist_names,
+		SongIds:    song_ids,
+	}
+}
+
 func GenerateAutocomplete(client *spotify.Client, ctxt context.Context) Genre {
 	genre_list, err := client.GetAvailableGenreSeeds(ctxt)
 	if err != nil {
