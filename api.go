@@ -130,7 +130,7 @@ func GenerateAutocomplete(client *spotify.Client, ctxt context.Context) Genre {
 
 func RecommendMood(client *spotify.Client, ctxt context.Context, mood string) Recommendations {
 	var tgtValence, tgtEnergy float64
-	targetGenres := make([]string, 2)
+	var targetGenres []string
 	if mood == "chill" {
 		tgtValence = 0.6
 		tgtEnergy = 0.2
