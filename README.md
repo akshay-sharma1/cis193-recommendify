@@ -13,7 +13,17 @@ The algorithm works by matching a user's particular input with a "seed" catalog 
 curate only the most relevant tracks. You can then preview individual songs, add the playlist to your Spotify library, and start listening to it right away!
 
 ## Usage Instructions
+To use this app, first set the following environment variables:
 
+``EXPORT SPOTIFY_SECRET=2bbb563a76344f5093984312db7c7a1f``
+
+``EXPORT SPOTIFY_ID=ed2847982e1741148c1e48512bc5fa55``
+
+Then, run the following command: 
+
+``go run main.go api.go`` 
+
+and navigate to ``localhost:8080`` in your browser to test the web application out.
 
 
 ## Spotify API

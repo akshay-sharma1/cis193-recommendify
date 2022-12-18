@@ -59,6 +59,11 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		if r.Form.Has("normalInput") {
 			// create normal client without authorization
 			initClient()
+
+			// add authenticated flag in session
+			session, _ := store.Get(r, "cookie-name")
+			session.Values["authenticated"] = false
+			session.Save(r, w)
 			http.Redirect(w, r, "/preferences", http.StatusSeeOther)
 		} else if r.Form.Has("authenticateInput") {
 			// redirect to authorization endpoint
