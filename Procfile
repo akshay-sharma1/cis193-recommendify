@@ -1,1 +1,1 @@
-web: go run main.go api.go
+web: cis193-recommendify
