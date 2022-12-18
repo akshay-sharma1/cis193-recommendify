@@ -40,7 +40,7 @@ func main() {
 	http.HandleFunc("/recommendations", getRecommendations)
 	http.HandleFunc("/confirmation", getPlaylist)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
