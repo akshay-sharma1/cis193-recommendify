@@ -76,10 +76,12 @@
 
       <!--Buttons -->
       <div class="interactionButtons">
+        {{ if .Authenticated}}
           <form method="post">
               <input type="hidden" name="playlistInput" value="createPlaylist">
               <button id="bottomButtons" class="btn btn-outline-light" style="background-color: #159a80" type="submit"> Add to My Spotify Library </button>
           </form>
+          {{end}}
           <a id="bottomButtons" class="btn btn-outline-light" href="/preferences" style="background-color: #159a80">
               Get Another Playlist
           </a>

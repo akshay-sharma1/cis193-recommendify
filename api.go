@@ -36,6 +36,7 @@ type Recommendations struct {
 	RecommendArtist  []string
 	RecommendSpotify []string
 	RecommendTrackID []string
+	Authenticated    bool
 }
 
 type CreatedPlaylist struct {

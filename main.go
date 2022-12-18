@@ -206,6 +206,7 @@ func getRecommendations(w http.ResponseWriter, r *http.Request) {
 			}
 
 			recommendations := RecommendMood(client, ctxt, strings.ToLower(val))
+			recommendations.Authenticated = session.Values["authenticated"].(bool)
 			session.Values["track_ids"] = recommendations.RecommendTrackID
 			session.Save(r, w)
 			t.Execute(w, recommendations)
@@ -216,6 +217,7 @@ func getRecommendations(w http.ResponseWriter, r *http.Request) {
 			}
 
 			recommendations := RecommendFromGenre(client, ctxt, strings.ToLower(val))
+			recommendations.Authenticated = session.Values["authenticated"].(bool)
 			session.Values["track_ids"] = recommendations.RecommendTrackID
 			session.Save(r, w)
 			t.Execute(w, recommendations)
@@ -226,6 +228,7 @@ func getRecommendations(w http.ResponseWriter, r *http.Request) {
 			}
 
 			recommendations := RecommendFromTrack(client, ctxt, val)
+			recommendations.Authenticated = session.Values["authenticated"].(bool)
 			session.Values["track_ids"] = recommendations.RecommendTrackID
 			session.Save(r, w)
 			t.Execute(w, recommendations)
